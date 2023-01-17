@@ -10,12 +10,13 @@ public class UIManager : MonoBehaviour
     public GameObject HelpMenu;
     public GameObject Headers;
 
-    //Fast Forward
+    //Fast Forward & Back
     public GameObject FastForwardButton;
     public Image FastForwardImage;
     private bool fastForwardActive = false;
     public Sprite FastForwardIcon;
     public Sprite PlayIcon;
+    public GameObject BackButton;
 
     //Audio Management
     public Image audioImage;
@@ -23,11 +24,15 @@ public class UIManager : MonoBehaviour
     public Sprite audioOffImg;
     private bool audioOn = true;
 
+    //Outside Connections
+    private GameManager gameManager;
+
     void Start(){
         MainMenu.SetActive(true);
         Headers.SetActive(true);
         HelpMenu.SetActive(false);
         FastForwardButton.SetActive(false);
+        BackButton.SetActive(false);
     }
 
     void Update(){  //Allows closing "Help" menu with Escape key
@@ -52,11 +57,14 @@ public class UIManager : MonoBehaviour
             MainMenu.SetActive(false);
             HelpMenu.SetActive(false);
             Headers.SetActive(false);
+            BackButton.SetActive(true);
+            
         } else {
             FastForwardButton.SetActive(false);
             MainMenu.SetActive(true);
-            HelpMenu.SetActive(true);
+            HelpMenu.SetActive(false);
             Headers.SetActive(true);
+            BackButton.SetActive(false);
         }
     }
 
@@ -82,9 +90,5 @@ public class UIManager : MonoBehaviour
         }
 
         //NEED TO ADD CALL TO GAMEMANAGER TO TOGGLE ON/OFF VOLUME!
-    }
-
-    public void Quit(){
-        Application.Quit();
     }
 }

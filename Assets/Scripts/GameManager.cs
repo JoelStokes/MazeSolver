@@ -9,13 +9,13 @@ public class GameManager : MonoBehaviour
     private char[,] maze;
     private GameObject[,] mazeGO;
     private string fileName;
-    private bool solving = false;
     private List<Vector2> solvedPath = new List<Vector2>();
 
-    //Maze Prefabs & Sprites
-    public GameObject MazeBGPrefab;
+    //Maze GOs, Prefabs & Sprites
+    public GameObject MazeBG;
     public GameObject MazePiecePrefab;
     public GameObject MazeMan;
+    private MazeManController mazeManController;
     public Sprite MazeJointIMG;
     public Sprite MazeEdgeIMG;
     public Sprite MazeFinishIMG;
@@ -33,6 +33,7 @@ public class GameManager : MonoBehaviour
         initialCameraSize = mainCamera.orthographicSize;
 
         uiManager = GameObject.Find("UI Manager").GetComponent<UIManager>();
+        mazeManController = MazeMan.GetComponent<MazeManController>();
     }
 
     public void SetMaze(char[,] newMaze){
@@ -45,8 +46,8 @@ public class GameManager : MonoBehaviour
     private void DrawMaze(){
         uiManager.ToggleMazeMode(true);
 
-        GameObject newMazeBG = Instantiate(MazeBGPrefab, transform);
-        newMazeBG.transform.localScale = new Vector3(maze.GetLength(0)+1, maze.GetLength(1)+1);
+        MazeBG.SetActive(true);
+        MazeBG.transform.localScale = new Vector3(maze.GetLength(0)+1, maze.GetLength(1)+1);
 
         if (maze.GetLength(0) > maze.GetLength(1)){
             mainCamera.orthographicSize = ((maze.GetLength(0)/2.1f) - 1);    //Scale camera to fit maze on screen to help support tiny to massive mazes
@@ -82,6 +83,7 @@ public class GameManager : MonoBehaviour
                     mazeGO[x,y].transform.Rotate(0,0,90);
                 } else if (maze[x,y].Equals('=')){
                     mazeGO[x,y].GetComponent<SpriteRenderer>().sprite = MazeFinishIMG;
+                    mazeGO[x,y].tag = "Finish";
                 } else {
                     mazeGO[x,y].tag = "Blank";  //Used for MazeMan Green Dots placement
                 }
@@ -136,7 +138,18 @@ public class GameManager : MonoBehaviour
 
     public void ResetToTitle(){
         uiManager.ToggleMazeMode(false);
+        mazeManController.Restart();
 
-        //ADD REST OF THIS
+        GameObject.Find("File Reader").GetComponent<FileReader>().ResetFileReader();
+
+        solvedPath.Clear();
+        MazeBG.SetActive(false);
+
+        //NEED TO OPTOMIZE THIS LATER IF TIME!!! Need to be reusing game objects instead of mass delete & recreate
+        for (int x = 0; x < mazeGO.GetLength(0); x++) {
+            for (int y = 0; y < mazeGO.GetLength(1); y++){
+                Destroy(mazeGO[x,y]);
+            }
+        }
     }
 }

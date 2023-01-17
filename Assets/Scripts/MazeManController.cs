@@ -12,9 +12,11 @@ public class MazeManController : MonoBehaviour
 
     private bool running = false;
     private List<Vector2> solvedPositions;
+    private Vector3 startingPos;
 
     void Start(){
         speed = defaultSpeed;
+        startingPos = transform.position;  //Needed to reset between Maze Mode & Main Menu
     }
 
     void Update(){
@@ -43,6 +45,9 @@ public class MazeManController : MonoBehaviour
             other.GetComponent<SpriteRenderer>().sprite = greenDot;
 
             //Send Walking SFX to GameManager to see if Audio is turned on
+        } else if (other.tag == "Finish"){
+            
+            //Play Victory Jingle
         }
     }
 
@@ -52,5 +57,12 @@ public class MazeManController : MonoBehaviour
         } else {
             speed = defaultSpeed;
         }
+    }
+
+    public void Restart(){  //Clear out maze info & return to Main Menu position
+        running = false;
+        solvedPositions.Clear();
+
+        transform.position = startingPos;
     }
 }
