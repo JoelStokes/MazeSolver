@@ -10,6 +10,7 @@ public class FileReader : MonoBehaviour
     //UI Elements
     public TMP_InputField inputText;
     public TextMeshProUGUI tipText;
+    private string tipTextStartMessage;
 
     private string filePath;
     private string appPath;
@@ -21,6 +22,8 @@ public class FileReader : MonoBehaviour
     {
         gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
         appPath = Application.dataPath;
+
+        tipTextStartMessage = tipText.text;
     }
 
     void Update(){  //Check for Enter key in case it's used instead of clicking Upload button
@@ -73,8 +76,6 @@ public class FileReader : MonoBehaviour
         }
 
         gameManager.SetMaze(mazeGrid);
-
-        TurnOffFileUI();
     }
 
     private void FileError(string errorMessage){     //A problem occured trying to read the file
@@ -83,11 +84,10 @@ public class FileReader : MonoBehaviour
         parsing = false;
     }
 
-    private void TurnOffFileUI(){   //Once maze sent to Game Manager, hide File Input UI so maze drawing can start
-
-    }
-
     public void ResetFileReader(){  //Called by GameManager when done with previous maze. Resets data & UI so next maze can be passed
         parsing = false;
+
+        tipText.text = tipTextStartMessage;
+        tipText.color = Color.white;
     }
 }
