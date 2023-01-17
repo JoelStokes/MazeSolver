@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
     public Sprite MazeJointIMG;
     public Sprite MazeEdgeIMG;
     public Sprite MazeFinishIMG;
+    public GameObject ImpossibleText;
 
     //Maze Population Variables
     float evenAdjust = .5f; //Offset to subtract to each piece if the maze dimensions on that axis is even
@@ -90,7 +91,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        MazeMan.transform.position = new Vector3(-3 - xAdjust, -1 + yAdjust, transform.position.z);
+        MazeMan.transform.position = new Vector3(-2 - xAdjust, -1 + yAdjust, transform.position.z);
     }
 
     private void SolveMaze(){
@@ -100,8 +101,8 @@ public class GameManager : MonoBehaviour
         if (solvable){
             MazeMan.GetComponent<MazeManController>().BeginMaze(solvedPath);
         } else {
-
-            //"Impossible to Solve" dialog with sad man
+            mazeManController.SetAnimationTrigger("FileError"); //Impossible to solve maze, have Maze Man shrug
+            ImpossibleText.SetActive(true);
         }
     }
 
@@ -144,6 +145,7 @@ public class GameManager : MonoBehaviour
 
         solvedPath.Clear();
         MazeBG.SetActive(false);
+        ImpossibleText.SetActive(false);
 
         //NEED TO OPTOMIZE THIS LATER IF TIME!!! Need to be reusing game objects instead of mass delete & recreate
         for (int x = 0; x < mazeGO.GetLength(0); x++) {

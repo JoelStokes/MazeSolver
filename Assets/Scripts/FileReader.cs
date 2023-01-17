@@ -38,7 +38,7 @@ public class FileReader : MonoBehaviour
         if (inputText.text == null || inputText.text == ""){    
             FileError("Please enter a file path");
         } else {
-            if (inputText.text.Contains("/")){  //Check if they input whole file path or if it's just the text file inside the exe folder
+            if (inputText.text.Contains("/") || inputText.text.Contains("\\")){  //Check if they input whole file path or if it's just the text file inside the exe folder
                 filePath = inputText.text;
             } else {
                 filePath = appPath + "/" + inputText.text;
