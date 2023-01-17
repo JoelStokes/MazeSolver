@@ -4,11 +4,18 @@ using UnityEngine;
 
 public class MazeManController : MonoBehaviour
 {
-    public float speed = 1;
+    public float defaultSpeed;
+    public float fastForwardSpeed;
+
+    private float speed;
     public Sprite greenDot;
 
     private bool running = false;
     private List<Vector2> solvedPositions;
+
+    void Start(){
+        speed = defaultSpeed;
+    }
 
     void Update(){
         if (running){
@@ -20,13 +27,14 @@ public class MazeManController : MonoBehaviour
                     solvedPositions.RemoveAt(0);
                 }
             } else {
-                //FINISHED!
+                //FINISHED
             }
         }
     }
 
     public void BeginMaze(List<Vector2> positionList){
         solvedPositions = positionList;   //Maybe a cleaner way to do this than a raw copy from a different script?
+        solvedPositions.Add(new Vector2(solvedPositions[solvedPositions.Count-1].x+3, solvedPositions[solvedPositions.Count-1].y)); //Add Victory spot beyond Finish Line
         running = true;
     }
 
@@ -35,6 +43,14 @@ public class MazeManController : MonoBehaviour
             other.GetComponent<SpriteRenderer>().sprite = greenDot;
 
             //Send Walking SFX to GameManager to see if Audio is turned on
+        }
+    }
+
+    public void UpdateSpeed(bool fastForward){
+        if (fastForward){
+            speed = fastForwardSpeed;
+        } else {
+            speed = defaultSpeed;
         }
     }
 }

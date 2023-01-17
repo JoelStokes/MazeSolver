@@ -11,12 +11,11 @@ public class GameManager : MonoBehaviour
     private string fileName;
     private bool solving = false;
     private List<Vector2> solvedPath = new List<Vector2>();
-    private GameObject MazeMan;
 
     //Maze Prefabs & Sprites
     public GameObject MazeBGPrefab;
     public GameObject MazePiecePrefab;
-    public GameObject MazeManPrefab;
+    public GameObject MazeMan;
     public Sprite MazeJointIMG;
     public Sprite MazeEdgeIMG;
     public Sprite MazeFinishIMG;
@@ -24,19 +23,16 @@ public class GameManager : MonoBehaviour
     //Maze Population Variables
     float evenAdjust = .5f; //Offset to subtract to each piece if the maze dimensions on that axis is even
 
-    //Audio Management
-    public Image audioImage;
-    public Sprite audioOnImg;
-    public Sprite audioOffImg;
-    private bool audioOn = true;
-
-    //Camera Management
+    //Camera & UI Management
     private Camera mainCamera;
     private float initialCameraSize;
+    private UIManager uiManager;
 
     private void Start(){
         mainCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
         initialCameraSize = mainCamera.orthographicSize;
+
+        uiManager = GameObject.Find("UI Manager").GetComponent<UIManager>();
     }
 
     public void SetMaze(char[,] newMaze){
@@ -47,13 +43,15 @@ public class GameManager : MonoBehaviour
     }
 
     private void DrawMaze(){
+        uiManager.ToggleMazeMode(true);
+
         GameObject newMazeBG = Instantiate(MazeBGPrefab, transform);
         newMazeBG.transform.localScale = new Vector3(maze.GetLength(0)+1, maze.GetLength(1)+1);
 
         if (maze.GetLength(0) > maze.GetLength(1)){
-            mainCamera.orthographicSize = ((maze.GetLength(0)/2) - 1);    //Scale camera to fit maze on screen to help support tiny to massive mazes
+            mainCamera.orthographicSize = ((maze.GetLength(0)/2.1f) - 1);    //Scale camera to fit maze on screen to help support tiny to massive mazes
         } else {
-            mainCamera.orthographicSize = ((maze.GetLength(1)/2) - 1);
+            mainCamera.orthographicSize = ((maze.GetLength(1)/2.1f) - 1);
         }
 
         float xAdjust = maze.GetLength(0)/2;
@@ -90,7 +88,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        MazeMan = Instantiate(MazeManPrefab, new Vector3(-3 - xAdjust, -1 + yAdjust, transform.position.z), transform.rotation);
+        MazeMan.transform.position = new Vector3(-3 - xAdjust, -1 + yAdjust, transform.position.z);
     }
 
     private void SolveMaze(){
@@ -136,21 +134,9 @@ public class GameManager : MonoBehaviour
         return ((maze[x,y] == ' ' || maze[x,y] == '=') && !visited[x,y]);
     }
 
-    public void ToggleAudio(){  //Turn background music & sfx on/off
-        audioOn = !audioOn;
-
-        if (audioOn){
-            audioImage.sprite = audioOnImg;
-        } else {
-            audioImage.sprite = audioOffImg;
-        }
-    }
-
     public void ResetToTitle(){
+        uiManager.ToggleMazeMode(false);
 
-    }
-
-    public void Quit(){
-        Application.Quit();
+        //ADD REST OF THIS
     }
 }

@@ -47,7 +47,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0114f75c8ae4594494a19dd43551544, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 15
+  defaultSpeed: 10
+  fastForwardSpeed: 25
   greenDot: {fileID: 21300000, guid: 31c5cd25fba60134999634a957826c5e, type: 3}
 --- !u!212 &8926249027800132606
 SpriteRenderer:
