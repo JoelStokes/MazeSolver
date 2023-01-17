@@ -151,5 +151,7 @@ public class GameManager : MonoBehaviour
                 Destroy(mazeGO[x,y]);
             }
         }
+
+        mainCamera.orthographicSize = initialCameraSize;
     }
 }

@@ -80,8 +80,10 @@ public class FileReader : MonoBehaviour
 
     private void FileError(string errorMessage){     //A problem occured trying to read the file
         tipText.text = errorMessage;
-        tipText.color = Color.red;
+        tipText.color = new Color(1, .25f, .25f, 1);
         parsing = false;
+
+        GameObject.Find("MazeMan").GetComponent<MazeManController>().SetAnimationTrigger("FileError");
     }
 
     public void ResetFileReader(){  //Called by GameManager when done with previous maze. Resets data & UI so next maze can be passed
