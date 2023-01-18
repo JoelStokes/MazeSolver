@@ -5028,7 +5028,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Does the maze have an entrance on the left side & an exit on the right?
+  m_text: Does the maze have an entrance on the left side & an exit on the bottom
+    right?
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b2c01b6f26061044485bfc0c2be9f2f1, type: 2}
   m_sharedMaterial: {fileID: -6693938462490015289, guid: b2c01b6f26061044485bfc0c2be9f2f1, type: 2}
