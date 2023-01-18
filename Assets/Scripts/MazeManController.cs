@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//  Manage Mr. Maze Man's movement solving the maze
 public class MazeManController : MonoBehaviour
 {
     public float defaultSpeed;
@@ -12,18 +13,19 @@ public class MazeManController : MonoBehaviour
     public Sprite greenDot;
 
     private bool running = false;
+    private bool positionsPrimed = false;
     private List<Vector2> solvedPositions;
     private Vector3 startingPos;
 
     private Animator animator;
-    private RisingNoteController risingNoteController;
+    private AudioManager audioManager;
 
     void Start(){
         speed = defaultSpeed;
         startingPos = transform.position;  //Needed to reset between Maze Mode & Main Menu
 
         animator = GetComponent<Animator>();
-        risingNoteController = GameObject.Find("Rising Note Manager").GetComponent<RisingNoteController>();
+        audioManager = GameObject.Find("Audio Manager").GetComponent<AudioManager>();
     }
 
     void Update(){
@@ -41,7 +43,7 @@ public class MazeManController : MonoBehaviour
                         transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
                     }
                 }
-            } else {
+            } else if (positionsPrimed) {   //Make sure finish animation only plays if the list properly populated
                 SetAnimationTrigger("MazeFinished");
             }
         }
@@ -49,20 +51,21 @@ public class MazeManController : MonoBehaviour
 
     public void BeginMaze(List<Vector2> positionList){
         animator.SetTrigger("MazeMode");
-        risingNoteController.CreatePitchArray(positionList.Count);
 
         transform.localScale = smallScale;
 
         solvedPositions = positionList;
         solvedPositions.Add(new Vector2(solvedPositions[solvedPositions.Count-1].x+3, solvedPositions[solvedPositions.Count-1].y)); //Adds Victory spot beyond Finish Line
+
+        positionsPrimed = true;
     }
 
     private void OnTriggerEnter2D(Collider2D other) {   //Set dots for every blank space traveled & play sfx
         if (other.tag == "Blank"){
             other.GetComponent<SpriteRenderer>().sprite = greenDot;
-            risingNoteController.PlayNextNote();
+            audioManager.PrepareFootstep();
         } else if (other.tag == "Finish"){
-            risingNoteController.PlayVictoryJingle();
+            audioManager.PrepareCheer();
         }
     }
 
@@ -80,6 +83,7 @@ public class MazeManController : MonoBehaviour
 
     public void Restart(){  //Clear out maze info & return to Main Menu position
         running = false;
+        positionsPrimed = false;
         solvedPositions.Clear();
 
         transform.localScale = new Vector3(1,1,1);

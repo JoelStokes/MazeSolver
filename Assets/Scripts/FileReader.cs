@@ -5,6 +5,7 @@ using TMPro;
 using System;
 using System.IO;  
 
+//  Process input file path, check validity, & return maze 2d char array
 public class FileReader : MonoBehaviour
 {
     //UI Elements
@@ -17,11 +18,22 @@ public class FileReader : MonoBehaviour
     private bool parsing = false;
 
     private GameManager gameManager;
+    private AudioManager audioManager;
 
     void Start()
     {
         gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
-        appPath = Application.dataPath;
+        audioManager = GameObject.Find("Audio Manager").GetComponent<AudioManager>();
+
+        appPath = Application.dataPath; //Set data path to be either editor assets folder or built .exe folder
+        if (!Application.isEditor){
+            if (Application.platform == RuntimePlatform.OSXPlayer) {
+                appPath += "/../../";
+            }
+            else if (Application.platform == RuntimePlatform.WindowsPlayer) {
+                appPath += "/../";
+            }
+        }
 
         tipTextStartMessage = tipText.text;
     }
@@ -43,6 +55,8 @@ public class FileReader : MonoBehaviour
             } else {
                 filePath = appPath + "/" + inputText.text;
             }
+
+            filePath = filePath.Replace("\"", "");  //Remove all quotes if any. Windows' Copy Path includes quotes on ends, makes it easier to copy & paste in
 
             //Check if input name includes ".txt". If not, add it
             if (!filePath.Contains(".txt")){
@@ -84,6 +98,7 @@ public class FileReader : MonoBehaviour
         parsing = false;
 
         GameObject.Find("MazeMan").GetComponent<MazeManController>().SetAnimationTrigger("FileError");
+        audioManager.PrepareError();
     }
 
     public void ResetFileReader(){  //Called by GameManager when done with previous maze. Resets data & UI so next maze can be passed

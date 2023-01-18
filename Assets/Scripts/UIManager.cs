@@ -22,10 +22,10 @@ public class UIManager : MonoBehaviour
     public Image audioImage;
     public Sprite audioOnImg;
     public Sprite audioOffImg;
-    private bool audioOn = true;
+    private bool muteAudio = false;
 
     //Outside Connections
-    private GameManager gameManager;
+    private AudioManager audioManager;
 
     void Start(){
         MainMenu.SetActive(true);
@@ -33,6 +33,8 @@ public class UIManager : MonoBehaviour
         HelpMenu.SetActive(false);
         FastForwardButton.SetActive(false);
         BackButton.SetActive(false);
+
+        audioManager = GameObject.Find("Audio Manager").GetComponent<AudioManager>();
     }
 
     void Update(){  //Allows closing "Help" menu with Escape key
@@ -81,14 +83,14 @@ public class UIManager : MonoBehaviour
     }
 
     public void ToggleAudio(){  //Turn background music & sfx on/off
-        audioOn = !audioOn;
+        muteAudio = !muteAudio;
 
-        if (audioOn){
+        if (!muteAudio){
             audioImage.sprite = audioOnImg;
         } else {
             audioImage.sprite = audioOffImg;
         }
 
-        //NEED TO ADD CALL TO GAMEMANAGER TO TOGGLE ON/OFF VOLUME!
+        audioManager.MuteVolume(muteAudio);
     }
 }
