@@ -11,7 +11,7 @@ public class MazeSolver : MonoBehaviour
         solvedPath.Clear();
 
         if (RecursiveSearch(0, 1, maze, new bool[maze.GetLength(0), maze.GetLength(1)])){
-            //OptimizePath();
+            OptimizePath();
         }
             
         return solvedPath;
@@ -50,28 +50,7 @@ public class MazeSolver : MonoBehaviour
     }
 
     private void OptimizePath(){    //Loop forwards & backwards through path to see if adjacent positions exist & then truncate
-        int removeCount = 0;
-        int errorCount = 0;
-/*
-        for (int a = solvedPath.Count-1; a > 0; a--){
-            for (int b = 0; b < a - removeCount; b++){    //y only needs to check until x else it'd be checking things already checked
-                if (a > b+1 || a < b-1){    //Only perform removal check if spaces are more than 1 apart
-                    if ((solvedPath[b].x-1 == solvedPath[a-removeCount].x && solvedPath[b].y == solvedPath[a-removeCount].y) || 
-                        (solvedPath[b].x+1 == solvedPath[a-removeCount].x && solvedPath[b].y == solvedPath[a-removeCount].y) || 
-                        (solvedPath[b].y-1 == solvedPath[a-removeCount].y && solvedPath[b].x == solvedPath[a-removeCount].x) ||
-                        (solvedPath[b].y+1 == solvedPath[a-removeCount].y && solvedPath[b].x == solvedPath[a-removeCount].x)){
-
-                        Debug.Log("A: " + solvedPath[a].x + "," + solvedPath[a].y + "  B: " + solvedPath[b].x + "," +solvedPath[b].y);
-
-                        for (int c = b+1; c < a - removeCount; c++){
-                            solvedPath.RemoveAt(c);
-                            removeCount++;
-                        }
-                    }
-                }
-            }
-        }
-        */
+        /*int removeCount = 0;
 
         for (int a=0; a < (solvedPath.Count - removeCount) - 1; a++){
             for (int b=(solvedPath.Count - removeCount) - 1; b>removeCount; b--){
@@ -100,6 +79,6 @@ public class MazeSolver : MonoBehaviour
                     }    
                 }
             }
-        }
+        }*/         //Unfortunately out of time to solve problems with pathfinding optimization...
     }
 }

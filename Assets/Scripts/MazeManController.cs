@@ -14,7 +14,7 @@ public class MazeManController : MonoBehaviour
 
     private bool running = false;
     private bool positionsPrimed = false;
-    private List<Vector2> solvedPositions;
+    private List<Vector2> solvedPositions = new List<Vector2>();
     private Vector3 startingPos;
 
     private Animator animator;
@@ -37,19 +37,20 @@ public class MazeManController : MonoBehaviour
                 if (Vector3.Distance(transform.position, solvedPositions[0]) < 0.001f){
                     solvedPositions.RemoveAt(0);
 
-                    if (solvedPositions.Count > 0 && transform.position.x - solvedPositions[0].x < -0.05f){
-                        transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, transform.localScale.z);    //Face direction running
-                    } else if (solvedPositions.Count > 0 && transform.position.x - solvedPositions[0].x > 0.05f) {
-                        transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+                    if (solvedPositions.Count > 0 && transform.position.x < solvedPositions[0].x){
+                        transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);    //Face direction running
+                    } else if (solvedPositions.Count > 0 && transform.position.x > solvedPositions[0].x) {
+                        transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
                     }
                 }
             } else if (positionsPrimed) {   //Make sure finish animation only plays if the list properly populated
-                SetAnimationTrigger("MazeFinished");
+                animator.SetBool("MazeFinished", true);
             }
         }
     }
 
     public void BeginMaze(List<Vector2> positionList){
+        animator.SetBool("MazeFinished", false);
         animator.SetTrigger("MazeMode");
 
         transform.localScale = smallScale;

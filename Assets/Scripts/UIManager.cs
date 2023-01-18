@@ -26,6 +26,7 @@ public class UIManager : MonoBehaviour
 
     //Outside Connections
     private AudioManager audioManager;
+    private MazeManController mazeManController;
 
     void Start(){
         MainMenu.SetActive(true);
@@ -35,6 +36,7 @@ public class UIManager : MonoBehaviour
         BackButton.SetActive(false);
 
         audioManager = GameObject.Find("Audio Manager").GetComponent<AudioManager>();
+        mazeManController = GameObject.Find("MazeMan").GetComponent<MazeManController>();
     }
 
     void Update(){  //Allows closing "Help" menu with Escape key
@@ -74,11 +76,11 @@ public class UIManager : MonoBehaviour
         fastForwardActive = !fastForwardActive;
 
         if (fastForwardActive){
-            FastForwardImage.sprite = PlayIcon;
-            GameObject.Find("MazeMan").GetComponent<MazeManController>().UpdateSpeed(true);
-        } else {
             FastForwardImage.sprite = FastForwardIcon;
-            GameObject.Find("MazeMan").GetComponent<MazeManController>().UpdateSpeed(false);
+            mazeManController.UpdateSpeed(true);
+        } else {
+            FastForwardImage.sprite = PlayIcon;
+            mazeManController.UpdateSpeed(false);
         }
     }
 
