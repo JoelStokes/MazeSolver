@@ -16,12 +16,14 @@ public class MazeManController : MonoBehaviour
     private Vector3 startingPos;
 
     private Animator animator;
+    private RisingNoteController risingNoteController;
 
     void Start(){
         speed = defaultSpeed;
         startingPos = transform.position;  //Needed to reset between Maze Mode & Main Menu
 
         animator = GetComponent<Animator>();
+        risingNoteController = GameObject.Find("Rising Note Manager").GetComponent<RisingNoteController>();
     }
 
     void Update(){
@@ -47,6 +49,7 @@ public class MazeManController : MonoBehaviour
 
     public void BeginMaze(List<Vector2> positionList){
         animator.SetTrigger("MazeMode");
+        risingNoteController.CreatePitchArray(positionList.Count);
 
         transform.localScale = smallScale;
 
@@ -54,14 +57,12 @@ public class MazeManController : MonoBehaviour
         solvedPositions.Add(new Vector2(solvedPositions[solvedPositions.Count-1].x+3, solvedPositions[solvedPositions.Count-1].y)); //Adds Victory spot beyond Finish Line
     }
 
-    private void OnTriggerEnter2D(Collider2D other) {
+    private void OnTriggerEnter2D(Collider2D other) {   //Set dots for every blank space traveled & play sfx
         if (other.tag == "Blank"){
             other.GetComponent<SpriteRenderer>().sprite = greenDot;
-
-            //Send Walking SFX to GameManager to see if Audio is turned on
+            risingNoteController.PlayNextNote();
         } else if (other.tag == "Finish"){
-            
-            //Play Victory Jingle
+            risingNoteController.PlayVictoryJingle();
         }
     }
 
