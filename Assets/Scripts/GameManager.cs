@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+//  Handle general game flow
 public class GameManager : MonoBehaviour
 {
     //Maze Data
-    private char[,] maze;
     private GameObject[,] mazeGO;
     private string fileName;
     private List<Vector2> solvedPath = new List<Vector2>();
@@ -19,14 +19,17 @@ public class GameManager : MonoBehaviour
     public Sprite MazeJointIMG;
     public Sprite MazeEdgeIMG;
     public Sprite MazeFinishIMG;
+    public GameObject ImpossibleText;
 
     //Maze Population Variables
-    float evenAdjust = .5f; //Offset to subtract to each piece if the maze dimensions on that axis is even
+    private float evenAdjust = .5f; //Offset to subtract to each piece if the maze dimensions on that axis is even
+    public MazeSolver mazeSolver;
 
-    //Camera & UI Management
+    //Camera, Audio, & UI Management
     private Camera mainCamera;
     private float initialCameraSize;
     private UIManager uiManager;
+    private AudioManager audioManager;
 
     private void Start(){
         mainCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
@@ -34,16 +37,25 @@ public class GameManager : MonoBehaviour
 
         uiManager = GameObject.Find("UI Manager").GetComponent<UIManager>();
         mazeManController = MazeMan.GetComponent<MazeManController>();
+        audioManager = GameObject.Find("Audio Manager").GetComponent<AudioManager>();
     }
 
-    public void SetMaze(char[,] newMaze){
-        maze = newMaze;
-        //Hide UI Elements?
-        DrawMaze();
-        SolveMaze();
+    public void SetMaze(char[,] maze){
+        DrawMaze(maze);
+
+        List<Vector2> solvedPath = new List<Vector2>();
+        solvedPath = mazeSolver.SolveMaze(maze);
+
+        if (solvedPath.Count > 0){  //Either start walking maze, or have Maze Man shrug if impossible
+            MazeMan.GetComponent<MazeManController>().BeginMaze(ConvertPathToCoordinates(solvedPath));
+        } else {
+            mazeManController.SetAnimationTrigger("FileError");
+            audioManager.PrepareError();
+            ImpossibleText.SetActive(true);
+        }
     }
 
-    private void DrawMaze(){
+    private void DrawMaze(char[,] maze){
         uiManager.ToggleMazeMode(true);
 
         MazeBG.SetActive(true);
@@ -90,50 +102,17 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        MazeMan.transform.position = new Vector3(-3 - xAdjust, -1 + yAdjust, transform.position.z);
+        MazeMan.transform.position = new Vector3(-2 - xAdjust, -1 + yAdjust, transform.position.z);
     }
 
-    private void SolveMaze(){
-        bool[,] visited = new bool[maze.GetLength(0), maze.GetLength(1)];   //Visited array ensures no endless loop happens in maze
-        bool solvable = RecursiveSearch(0, 1, visited);   //Maze opening always starts at (0,1)
+    private List<Vector2>ConvertPathToCoordinates(List<Vector2> path){
+        List<Vector2> Coordinates = new List<Vector2>();
 
-        if (solvable){
-            MazeMan.GetComponent<MazeManController>().BeginMaze(solvedPath);
-        } else {
-
-            //"Impossible to Solve" dialog with sad man
-        }
-    }
-
-    private bool RecursiveSearch(int x, int y, bool[,] visited){
-        bool finished = false;
-
-        if (maze[x,y] == '='){    //Finished adding to list, exit recursion
-            return true;
+        for (int i=0; i < path.Count; i++){
+            Coordinates.Add(mazeGO[(int)path[i].x, (int)path[i].y].transform.position);
         }
 
-        visited[x,y] = true;
-
-        //Check each direction to see if empty & non-visited
-        if (IsViableSpot(x, y+1, visited))     //North
-            finished = RecursiveSearch(x, y+1, visited);
-        if (!finished && IsViableSpot(x+1, y, visited))  //East
-            finished = RecursiveSearch(x+1, y, visited);
-        if (!finished && IsViableSpot(x, y-1, visited))  //South
-            finished = RecursiveSearch(x, y-1, visited);
-        if (!finished && (x != 0 || y != 1) && IsViableSpot(x-1, y, visited))  //West, extra check to prevent breaking out of maze, .txt has open start
-            finished = RecursiveSearch(x-1, y, visited);
-
-        if (finished){  //Add coordinates to List & return to previous recursion
-            Vector2 position = mazeGO[x,y].transform.position;
-            solvedPath.Insert(0, position);
-            return true;
-        }
-        return false;   //Dead End, loop back to last possible path
-    }
-
-    private bool IsViableSpot(int x, int y, bool[,] visited){   //Check if space is empty or finish line, and that this spot has never been visited before
-        return ((maze[x,y] == ' ' || maze[x,y] == '=') && !visited[x,y]);
+        return Coordinates;
     }
 
     public void ResetToTitle(){
@@ -144,6 +123,9 @@ public class GameManager : MonoBehaviour
 
         solvedPath.Clear();
         MazeBG.SetActive(false);
+        ImpossibleText.SetActive(false);
+
+        audioManager.ResetFootCount();
 
         //NEED TO OPTOMIZE THIS LATER IF TIME!!! Need to be reusing game objects instead of mass delete & recreate
         for (int x = 0; x < mazeGO.GetLength(0); x++) {
@@ -151,5 +133,7 @@ public class GameManager : MonoBehaviour
                 Destroy(mazeGO[x,y]);
             }
         }
+
+        mainCamera.orthographicSize = initialCameraSize;
     }
 }

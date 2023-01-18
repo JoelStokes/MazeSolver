@@ -22,10 +22,11 @@ public class UIManager : MonoBehaviour
     public Image audioImage;
     public Sprite audioOnImg;
     public Sprite audioOffImg;
-    private bool audioOn = true;
+    private bool muteAudio = false;
 
     //Outside Connections
-    private GameManager gameManager;
+    private AudioManager audioManager;
+    private MazeManController mazeManController;
 
     void Start(){
         MainMenu.SetActive(true);
@@ -33,6 +34,9 @@ public class UIManager : MonoBehaviour
         HelpMenu.SetActive(false);
         FastForwardButton.SetActive(false);
         BackButton.SetActive(false);
+
+        audioManager = GameObject.Find("Audio Manager").GetComponent<AudioManager>();
+        mazeManController = GameObject.Find("MazeMan").GetComponent<MazeManController>();
     }
 
     void Update(){  //Allows closing "Help" menu with Escape key
@@ -72,23 +76,23 @@ public class UIManager : MonoBehaviour
         fastForwardActive = !fastForwardActive;
 
         if (fastForwardActive){
-            FastForwardImage.sprite = PlayIcon;
-            GameObject.Find("MazeMan").GetComponent<MazeManController>().UpdateSpeed(true);
-        } else {
             FastForwardImage.sprite = FastForwardIcon;
-            GameObject.Find("MazeMan").GetComponent<MazeManController>().UpdateSpeed(false);
+            mazeManController.UpdateSpeed(true);
+        } else {
+            FastForwardImage.sprite = PlayIcon;
+            mazeManController.UpdateSpeed(false);
         }
     }
 
     public void ToggleAudio(){  //Turn background music & sfx on/off
-        audioOn = !audioOn;
+        muteAudio = !muteAudio;
 
-        if (audioOn){
+        if (!muteAudio){
             audioImage.sprite = audioOnImg;
         } else {
             audioImage.sprite = audioOffImg;
         }
 
-        //NEED TO ADD CALL TO GAMEMANAGER TO TOGGLE ON/OFF VOLUME!
+        audioManager.MuteVolume(muteAudio);
     }
 }
